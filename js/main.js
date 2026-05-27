@@ -1,87 +1,88 @@
-const USERNAME = 'daggierappie';
-const REPO = 'daggierappie.github.io';
-
-// 1. AUTOMATICALLY LIST STORIES ON THE MAIN PAGE
+// 1. READS STORIES.TXT AND LISTS THEM ON THE NOVELS PAGE
 async function loadNovelMenu() {
     const menuContainer = document.getElementById('novel-list');
-    if (!menuContainer) return; // Skip if we aren't on the novels menu page
+    if (!menuContainer) return;
 
     try {
-        const response = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/`);
-        const files = await response.json();
-
-        // Find folders, ignoring system stuff
-        const ignored = ['components', 'css', 'js', '.github', 'novels'];
-        const storyFolders = files.filter(f => f.type === 'dir' && !ignored.includes(f.name));
+        const response = await fetch('stories.txt');
+        const text = await response.text();
+        // Break the text file into a list of folder names
+        const folders = text.split('\n').map(f => f.trim()).filter(f => f.length > 0);
 
         menuContainer.innerHTML = '';
         
-        storyFolders.forEach(folder => {
-            const cleanName = folder.name.replace(/-/g, ' ').toUpperCase();
+        folders.forEach(folder => {
+            const cleanName = folder.replace(/-/g, ' ').toUpperCase();
             menuContainer.innerHTML += `
-                <div class="story-card">
+                <div style="margin: 20px 0; padding: 15px; border: 1px solid #333; border-radius: 5px;">
                     <h2>${cleanName}</h2>
-                    <a href="novels.html?story=${folder.name}">Read This Story</a>
+                    <a href="novels.html?story=${folder}" style="color: #ff66b2; text-decoration: none; font-weight: bold;">Read Story →</a>
                 </div>
             `;
         });
     } catch (err) {
-        menuContainer.innerHTML = '<p>Error loading stories.</p>';
+        menuContainer.innerHTML = '<p>Error loading story directory.</p>';
     }
 }
 
-// 2. AUTOMATICALLY GRAB AND DISPLAY CHAPTERS INSIDE A STORY FOLDER
+// 2. LOADS THE CHAPTERS WHEN A STORY IS CLICKED
 async function loadCurrentStory() {
     const urlParams = new URLSearchParams(window.location.search);
     const storyFolder = urlParams.get('story');
-    
-    // If there's no "?story=" in the web address, we are just looking at the main menu
     if (!storyFolder) return; 
 
     const menuContainer = document.getElementById('novel-list');
-    if (menuContainer) menuContainer.style.display = 'none'; // Hide the main list
+    if (menuContainer) menuContainer.style.display = 'none'; 
 
-    // Create a place on the page to dump the chapters
     let storyViewer = document.getElementById('story-viewer');
     if (!storyViewer) {
         storyViewer = document.createElement('div');
         storyViewer.id = 'story-viewer';
-        document.body.appendChild(storyViewer);
+        document.querySelector('.content').appendChild(storyViewer);
     }
 
     try {
-        // Look INSIDE the specific story folder (e.g., /coco-bandicoot)
-        const response = await fetch(`https://api.github.com/repos/${USERNAME}/${REPO}/contents/${storyFolder}`);
-        const files = await response.json();
+        storyViewer.innerHTML = `<h1>${storyFolder.replace(/-/g, ' ').toUpperCase()}</h1><hr><br>`;
+        
+        // We look for chapters sequentially (chapter-1, chapter-2, etc.)
+        let chapterNum = 1;
+        let hasMoreChapters = true;
 
-        // Get all markdown (.md) files and sort them nicely
-        const chapters = files.filter(f => f.name.endsWith('.md')).sort((a, b) => a.name.localeCompare(b.name));
+        while (hasMoreChapters) {
+            try {
+                const response = await fetch(`${storyFolder}/chapter-${chapterNum}.md`);
+                if (!response.ok) {
+                    hasMoreChapters = false;
+                    break;
+                }
+                const text = await response.text();
+                
+                // Convert basic formatting
+                const cleanHtml = text
+                    .replace(/^# (.*)$/gm, '<h2>$1</h2>')
+                    .replace(/\n\n/g, '</p><p>');
 
-        storyViewer.innerHTML = `<h1>${storyFolder.replace(/-/g, ' ').toUpperCase()}</h1>`;
-
-        // Grab the actual text content of each chapter file
-        for (const file of chapters) {
-            const fileData = await fetch(file.download_url);
-            const text = await fileData.text();
-            
-            // Clean up the basic markdown formatting for the browser
-            const cleanHtml = text
-                .replace(/^# (.*)$/gm, '<h2>$1</h2>') // Turns "# Title" into a heading
-                .replace(/\n\n/g, '</p><p>');       // Turns double spaces into paragraphs
-
-            storyViewer.innerHTML += `
-                <div class="chapter-content">
-                    <p>${cleanHtml}</p>
-                </div>
-                <hr>
-            `;
+                storyViewer.innerHTML += `
+                    <div class="chapter-content" style="line-height: 1.6; margin-bottom: 40px;">
+                        ${cleanHtml}
+                    </div>
+                    <hr style="border: 0; border-top: 1px dashed #333; margin: 40px 0;">
+                `;
+                chapterNum++;
+            } catch (e) {
+                hasMoreChapters = false;
+            }
         }
+
+        if (chapterNum === 1) {
+            storyViewer.innerHTML += '<p>No chapters found in this folder yet. Make sure files are named chapter-1.md, chapter-2.md, etc.</p>';
+        }
+
     } catch (err) {
-        storyViewer.innerHTML = '<p>Could not load the chapters for this story.</p>';
+        storyViewer.innerHTML = '<p>Could not load the chapters.</p>';
     }
 }
 
-// Run everything when the browser loads
 document.addEventListener('DOMContentLoaded', () => {
     loadNovelMenu();
     loadCurrentStory();
