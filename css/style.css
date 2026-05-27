@@ -175,4 +175,19 @@ footer {
     color: var(--text-muted);
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     margin-top: 4rem;
+
+/* --- 404 SAFETY NET DESIGN --- */
+.safety-net .error-code {
+    font-size: 6rem;
+    font-weight: bold;
+    font-family: sans-serif;
+    color: var(--color-purple);
+    line-height: 1;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 20px rgba(189, 147, 249, 0.3);
+}
+
+.safety-net h2 {
+    color: var(--color-pink) !important;
+}
 }
