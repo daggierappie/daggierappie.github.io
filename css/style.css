@@ -1,4 +1,6 @@
-/* Color Palette Custom Properties */
+/* ==========================================================================
+   1. COLOR PALETTE & VARIABLES
+   ========================================================================== */
 :root {
     --bg-main: #0a0b10;
     --bg-surface: #121420;
@@ -10,6 +12,9 @@
     --color-green: #50fa7b;
 }
 
+/* ==========================================================================
+   2. GLOBAL BODY & MASTER LINK OVERRIDES (Crushes default browser blue/purple)
+   ========================================================================== */
 body {
     font-family: 'Georgia', serif;
     line-height: 1.7;
@@ -19,7 +24,34 @@ body {
     color: var(--text-main);
 }
 
-/* --- MODULAR NAVIGATION --- */
+/* Unvisited Links */
+a:link {
+    color: var(--color-green) !important;
+    text-decoration: none !important;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+/* Visited Links (Fixes the dark purple readability issue) */
+a:visited {
+    color: var(--color-green) !important;
+    text-decoration: none !important;
+}
+
+/* Hover State (Glow effect when mouse passes over) */
+a:hover {
+    color: var(--color-pink) !important;
+    text-decoration: underline !important;
+    text-shadow: 0 0 8px rgba(255, 121, 198, 0.6) !important;
+}
+
+/* Active State (The millisecond you click down) */
+a:active {
+    color: var(--color-purple) !important;
+}
+
+/* ==========================================================================
+   3. MODULAR NAVIGATION COMPONENT
+   ========================================================================== */
 .site-nav {
     display: flex;
     justify-content: space-between;
@@ -34,15 +66,12 @@ body {
     font-weight: bold;
     font-family: sans-serif;
     letter-spacing: 2px;
-    background: linear-gradient(45deg, var(--color-pink), var(--color-purple));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
 }
 
-/* Forces the link inside the logo block to absorb the gradient colors correctly */
+/* Forces the text gradient to stay bright even inside a clickable anchor */
 .nav-logo a {
-    color: inherit;
-    text-decoration: none;
+    color: inherit !important;
+    text-decoration: none !important;
     background: linear-gradient(45deg, var(--color-pink), var(--color-purple));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -60,18 +89,21 @@ body {
 }
 
 .nav-links a {
-    color: var(--text-muted);
-    text-decoration: none;
+    color: var(--text-muted) !important;
+    text-decoration: none !important;
     font-family: sans-serif;
     font-size: 0.9rem;
     transition: color 0.3s ease;
 }
 
 .nav-links a:hover {
-    color: var(--color-pink);
+    color: var(--color-pink) !important;
+    text-shadow: none !important;
 }
 
-/* --- MAIN CONTENT & HERO --- */
+/* ==========================================================================
+   4. HOME LANDING HERO VIEW
+   ========================================================================== */
 main {
     max-width: 1200px;
     margin: 0 auto;
@@ -106,15 +138,15 @@ main {
     margin: 2rem 0;
 }
 
-/* Interactive CTA Button */
+/* Landing Page Main CTA Buttons */
 .cta-button {
     display: inline-block;
     background: transparent;
-    color: var(--color-pink);
+    color: var(--color-pink) !important;
     border: 2px solid var(--color-pink);
     padding: 0.75rem 2rem;
     border-radius: 30px;
-    text-decoration: none;
+    text-decoration: none !important;
     font-family: sans-serif;
     font-weight: bold;
     transition: all 0.3s ease;
@@ -122,11 +154,15 @@ main {
 
 .cta-button:hover {
     background-color: var(--color-pink);
-    color: var(--bg-main);
+    color: var(--bg-main) !important;
     box-shadow: 0 0 20px rgba(255, 121, 198, 0.4);
+    text-shadow: none !important;
+    text-decoration: none !important;
 }
 
-/* --- SHOWCASE MEDIA GRID --- */
+/* ==========================================================================
+   5. INDEX PAGE MATRIX SHOWCASE GRID
+   ========================================================================== */
 .media-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -158,6 +194,7 @@ main {
     margin: 0 0 1rem 0;
     font-family: sans-serif;
     font-size: 1.3rem;
+    color: var(--text-main);
 }
 
 .media-card p {
@@ -179,44 +216,133 @@ main {
     background-color: rgba(80, 250, 123, 0.1);
 }
 
-/* FOOTER */
-footer {
-    text-align: center;
-    padding: 3rem 0;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-    margin-top: 4rem;
+/* ==========================================================================
+   6. NOVELS PLATFORM DISPLAY BOARDS
+   ========================================================================== */
+.novel-hub-container {
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+}
 
-/* --- 404 SAFETY NET DESIGN --- */
-.safety-net .error-code {
-    font-size: 6rem;
-    font-weight: bold;
-    font-family: sans-serif;
+.subtitle {
     color: var(--color-purple);
-    line-height: 1;
-    margin-bottom: 1rem;
-    text-shadow: 0 0 20px rgba(189, 147, 249, 0.3);
+    font-style: italic;
+    margin-top: -1rem;
+    margin-bottom: 3rem;
 }
 
-.safety-net h2 {
-    color: var(--color-pink) !important;
+.book-showcase {
+    display: flex;
+    gap: 3rem;
+    background-color: var(--bg-surface);
+    padding: 3rem;
+    border-radius: 16px;
+    border: 1px solid rgba(189, 147, 249, 0.1);
+    margin-top: 2rem;
 }
 
-/* Universal Link Styling Fixes */
-a {
-    color: var(--color-green); /* Changes bright blue links to your emerald green */
-    text-decoration: none;     /* Removes standard underlining */
-    transition: color 0.2s ease;
+.book-cover-placeholder {
+    width: 220px;
+    height: 320px;
+    background: linear-gradient(135deg, #1f2335, #24283b);
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4rem;
+    border: 2px solid var(--color-purple);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.6);
+    flex-shrink: 0;
 }
 
-a:hover {
-    color: var(--color-pink);  /* Glows orchid pink when hovered over */
+.book-details {
+    text-align: left;
 }
 
-/* Specific cleanup for lists */
-.chapter-list a {
-    color: var(--color-green);
-    font-size: 1.1rem;
+.book-genre {
+    color: var(--color-pink);
+    font-family: sans-serif;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
 }
+
+.book-details h3 {
+    font-size: 2.2rem;
+    margin: 0.5rem 0 1.5rem 0;
+    color: var(--text-main);
 }
+
+.book-synopsis {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    margin-bottom: 2rem;
+}
+
+.book-details h4 {
+    color: var(--text-main);
+    font-family: sans-serif;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.5rem;
+}
+
+/* Directories List Details */
+.chapter-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.chapter-list li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    font-family: sans-serif;
+}
+
+.chapter-date {
+    font-size: 0.7rem;
+    background-color: var(--color-pink);
+    color: var(--bg-main);
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    margin-left: 0.5rem;
+    font-weight: bold;
+}
+
+.locked-chapter {
+    color: var(--text-muted);
+    font-style: italic;
+    opacity: 0.6;
+}
+
+/* ==========================================================================
+   7. IMMERSIVE E-READER READER VIEWS
+   ========================================================================== */
+.reading-mode {
+    max-width: 680px; 
+    margin: 0 auto;
+    text-align: left;
+}
+
+.chapter-header {
+    border-bottom: 1px solid rgba(189, 147, 249, 0.2);
+    padding-bottom: 2rem;
+    margin-bottom: 3rem;
+}
+
+.novel-title-back a {
+    color: var(--color-purple) !important;
+    font-family: sans-serif;
+    font-size: 0.9rem;
+}
+
+.chapter-header h1 {
+    font-size: 2.8rem;
+    margin: 1rem 0 0.5rem 0;
+    color: var(--text-main);
+}
+
+.chapter-meta {
+    font-family: sans-serif;
+    font-size: 0.8
