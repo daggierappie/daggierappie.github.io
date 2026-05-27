@@ -83,7 +83,24 @@ async function loadCurrentStory() {
     }
 }
 
+// 3. AUTOMATICALLY LOADS THE NAVIGATION BAR TEMPLATE
+async function loadNavbar() {
+    const navPlaceholder = document.getElementById('nav-placeholder');
+    if (!navPlaceholder) return;
+
+    try {
+        const response = await fetch('components/nav.html');
+        if (response.ok) {
+            const navHtml = await response.getReader ? await response.text() : await response.text();
+            navPlaceholder.innerHTML = navHtml;
+        }
+    } catch (err) {
+        console.error("Could not load navigation bar:", err);
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    loadNavbar();      // <--- This brings your navigation menu back!
     loadNovelMenu();
     loadCurrentStory();
 });
