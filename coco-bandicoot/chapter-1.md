@@ -1,0 +1,3 @@
+# Chapter 1: The Great Cheese Rocket
+
+Once upon a time, a brave hamster named Barnaby built a rocket ship out of swiss cheese...
