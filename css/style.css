@@ -39,6 +39,18 @@ body {
     -webkit-text-fill-color: transparent;
 }
 
+/* Forces the link inside the logo block to absorb the gradient colors correctly */
+.nav-logo a {
+    color: inherit;
+    text-decoration: none;
+    background: linear-gradient(45deg, var(--color-pink), var(--color-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-family: sans-serif;
+    font-weight: bold;
+    letter-spacing: 2px;
+}
+
 .nav-links {
     display: flex;
     list-style: none;
@@ -189,5 +201,22 @@ footer {
 
 .safety-net h2 {
     color: var(--color-pink) !important;
+}
+
+/* Universal Link Styling Fixes */
+a {
+    color: var(--color-green); /* Changes bright blue links to your emerald green */
+    text-decoration: none;     /* Removes standard underlining */
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--color-pink);  /* Glows orchid pink when hovered over */
+}
+
+/* Specific cleanup for lists */
+.chapter-list a {
+    color: var(--color-green);
+    font-size: 1.1rem;
 }
 }
