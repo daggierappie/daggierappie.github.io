@@ -1,12 +1,39 @@
-// 1. READS STORIES.TXT AND LISTS THEM ON THE NOVELS PAGE
+// =======================================================
+// 1. FIXED NAVIGATION LOADER FOR ALL PAGES
+// =======================================================
+async function loadNavbar() {
+    const navPlaceholder = document.getElementById('nav-placeholder');
+    if (!navPlaceholder) return;
+
+    try {
+        // Try to fetch from the local components folder
+        const response = await fetch('components/nav.html');
+        if (response.ok) {
+            navPlaceholder.innerHTML = await response.text();
+        } else {
+            // Fallback just in case it needs a leading slash depending on the subpage
+            const fallbackResponse = await fetch('/components/nav.html');
+            if (fallbackResponse.ok) {
+                navPlaceholder.innerHTML = await fallbackResponse.text();
+            }
+        }
+    } catch (err) {
+        console.error("Could not load navigation bar:", err);
+    }
+}
+
+// =======================================================
+// 2. AUTOMATICALLY LIST STORIES ON THE NOVELS PAGE
+// =======================================================
 async function loadNovelMenu() {
     const menuContainer = document.getElementById('novel-list');
-    if (!menuContainer) return;
+    if (!menuContainer) return; // Safely stop if we aren't on the novels page
 
     try {
         const response = await fetch('stories.txt');
+        if (!response.ok) return;
+        
         const text = await response.text();
-        // Break the text file into a list of folder names
         const folders = text.split('\n').map(f => f.trim()).filter(f => f.length > 0);
 
         menuContainer.innerHTML = '';
@@ -25,7 +52,9 @@ async function loadNovelMenu() {
     }
 }
 
-// 2. LOADS THE CHAPTERS WHEN A STORY IS CLICKED
+// =======================================================
+// 3. LOADS THE CHAPTERS WHEN A STORY IS CLICKED
+// =======================================================
 async function loadCurrentStory() {
     const urlParams = new URLSearchParams(window.location.search);
     const storyFolder = urlParams.get('story');
@@ -38,13 +67,13 @@ async function loadCurrentStory() {
     if (!storyViewer) {
         storyViewer = document.createElement('div');
         storyViewer.id = 'story-viewer';
-        document.querySelector('.content').appendChild(storyViewer);
+        const contentArea = document.querySelector('.content') || document.body;
+        contentArea.appendChild(storyViewer);
     }
 
     try {
         storyViewer.innerHTML = `<h1>${storyFolder.replace(/-/g, ' ').toUpperCase()}</h1><hr><br>`;
         
-        // We look for chapters sequentially (chapter-1, chapter-2, etc.)
         let chapterNum = 1;
         let hasMoreChapters = true;
 
@@ -57,7 +86,6 @@ async function loadCurrentStory() {
                 }
                 const text = await response.text();
                 
-                // Convert basic formatting
                 const cleanHtml = text
                     .replace(/^# (.*)$/gm, '<h2>$1</h2>')
                     .replace(/\n\n/g, '</p><p>');
@@ -83,24 +111,11 @@ async function loadCurrentStory() {
     }
 }
 
-// 3. AUTOMATICALLY LOADS THE NAVIGATION BAR TEMPLATE
-async function loadNavbar() {
-    const navPlaceholder = document.getElementById('nav-placeholder');
-    if (!navPlaceholder) return;
-
-    try {
-        const response = await fetch('components/nav.html');
-        if (response.ok) {
-            const navHtml = await response.getReader ? await response.text() : await response.text();
-            navPlaceholder.innerHTML = navHtml;
-        }
-    } catch (err) {
-        console.error("Could not load navigation bar:", err);
-    }
-}
-
+// =======================================================
+// RUN EVERYTHING SAFELY ON PAGE LOAD
+// =======================================================
 document.addEventListener('DOMContentLoaded', () => {
-    loadNavbar();      // <--- This brings your navigation menu back!
-    loadNovelMenu();
-    loadCurrentStory();
+    loadNavbar();      // Restores headers to all pages immediately
+    loadNovelMenu();   // Runs only on novels page
+    loadCurrentStory(); // Runs only when viewing a story
 });
