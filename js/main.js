@@ -6,12 +6,11 @@ async function loadNavbar() {
     if (!navPlaceholder) return;
 
     try {
-        // Try to fetch from the local components folder
         const response = await fetch('components/nav.html');
         if (response.ok) {
             navPlaceholder.innerHTML = await response.text();
         } else {
-            // Fallback just in case it needs a leading slash depending on the subpage
+            // Fallback for subpages
             const fallbackResponse = await fetch('/components/nav.html');
             if (fallbackResponse.ok) {
                 navPlaceholder.innerHTML = await fallbackResponse.text();
@@ -27,7 +26,7 @@ async function loadNavbar() {
 // =======================================================
 async function loadNovelMenu() {
     const menuContainer = document.getElementById('novel-list');
-    if (!menuContainer) return; // Safely stop if we aren't on the novels page
+    if (!menuContainer) return; // Safely stops right here if we aren't on the novels page
 
     try {
         const response = await fetch('stories.txt');
@@ -48,7 +47,7 @@ async function loadNovelMenu() {
             `;
         });
     } catch (err) {
-        menuContainer.innerHTML = '<p>Error loading story directory.</p>';
+        console.error("Error loading novel list:", err);
     }
 }
 
@@ -58,7 +57,7 @@ async function loadNovelMenu() {
 async function loadCurrentStory() {
     const urlParams = new URLSearchParams(window.location.search);
     const storyFolder = urlParams.get('story');
-    if (!storyFolder) return; 
+    if (!storyFolder) return; // Safely stops right here if a specific story isn't open
 
     const menuContainer = document.getElementById('novel-list');
     if (menuContainer) menuContainer.style.display = 'none'; 
@@ -101,21 +100,17 @@ async function loadCurrentStory() {
                 hasMoreChapters = false;
             }
         }
-
-        if (chapterNum === 1) {
-            storyViewer.innerHTML += '<p>No chapters found in this folder yet. Make sure files are named chapter-1.md, chapter-2.md, etc.</p>';
-        }
-
     } catch (err) {
-        storyViewer.innerHTML = '<p>Could not load the chapters.</p>';
+        console.error("Error loading chapters:", err);
     }
 }
 
 // =======================================================
-// RUN EVERYTHING SAFELY ON PAGE LOAD
+// RUN EVERYTHING SAFELY WITHOUT INTERRUPTING EACH OTHER
 // =======================================================
 document.addEventListener('DOMContentLoaded', () => {
-    loadNavbar();      // Restores headers to all pages immediately
-    loadNovelMenu();   // Runs only on novels page
-    loadCurrentStory(); // Runs only when viewing a story
+    // Wrapping each call in a try/catch prevents one failure from killing the entire script
+    try { loadNavbar(); } catch(e) { console.error(e); }
+    try { loadNovelMenu(); } catch(e) { console.error(e); }
+    try { loadCurrentStory(); } catch(e) { console.error(e); }
 });
