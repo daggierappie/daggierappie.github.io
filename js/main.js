@@ -1,4 +1,4 @@
-// Function to dynamically load HTML components
+// Upgraded function to dynamically load HTML components from the absolute root
 function loadComponent(elementId, componentPath) {
     fetch(componentPath)
         .then(response => {
@@ -13,6 +13,6 @@ function loadComponent(elementId, componentPath) {
 
 // Automatically load the navigation when the website opens
 document.addEventListener("DOMContentLoaded", () => {
-    // Note the path: relative to index.html, it looks into components/nav.html
-    loadComponent('header-placeholder', './components/nav.html');
+    // Adding a leading slash (/) tells the browser to look from the root domain down
+    loadComponent('header-placeholder', '/components/nav.html');
 });
